@@ -10,18 +10,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Chatbot Flask',
+      title: 'ChatBot',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter & Python'),
+      home: MyHomePage(title: 'Flutter&Python'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
+
   final String title;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -32,17 +34,20 @@ class _MyHomePageState extends State<MyHomePage> {
   static const String BOT_URL =
       "https://superduperchat-api-heroku.herokuapp.com/"; // replace with server address
   TextEditingController _queryController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.orangeAccent.withOpacity(.7),
         centerTitle: true,
         title: Text("Flutter & Python"),
       ),
+      backgroundColor: Colors.orangeAccent,
       body: Stack(
         children: <Widget>[
           AnimatedList(
-              // key to call remove and insert from anywhere
+              // key to call remove and insert from aanywhere
               key: _listKey,
               initialItemCount: _data.length,
               itemBuilder:
@@ -50,22 +55,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 return _buildItem(_data[index], animation, index);
               }),
           Align(
-            alignment: Alignment.bottomCenter,
-            child: TextField(
-              decoration: InputDecoration(
-                icon: Icon(
-                  Icons.message,
-                  color: Colors.greenAccent,
-                ),
-                hintText: "Hello",
-              ),
-              controller: _queryController,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (msg) {
-                this._getResponse();
-              },
-            ),
-          )
+              alignment: Alignment.bottomCenter,
+              child: ColorFiltered(
+                  colorFilter: ColorFilter.linearToSrgbGamma(),
+                  child: Container(
+                      color: Colors.white.withOpacity(.7),
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 20, right: 20),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.message,
+                                color: Colors.orange,
+                              ),
+                              hintText: "Hello",
+                              fillColor: Colors.white12,
+                            ),
+                            controller: _queryController,
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (msg) {
+                              this._getResponse();
+                            },
+                          )))))
         ],
       ),
     );
@@ -84,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
           BOT_URL,
           body: {"query": _queryController.text},
         )..then((response) {
+            print(response.body);
             Map<String, dynamic> data = jsonDecode(response.body);
             _insertSingleItem(data['response'] + "<bot>");
           });
@@ -97,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _insertSingleItem(String message) {
-    _data.add(message);
+    _data.add(message); //insert(_data.length-1, message);
     _listKey.currentState.insertItem(_data.length - 1);
   }
 
@@ -111,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: mine ? Alignment.topLeft : Alignment.topRight,
               child: Bubble(
                 child: Text(item.replaceAll("<bot>", "")),
-                color: mine ? Colors.blue : Colors.indigo,
+                color: mine ? Colors.deepOrangeAccent : Colors.white,
                 padding: BubbleEdges.all(10),
               )),
         ));
